@@ -1,0 +1,7 @@
+{
+  "commands.banmallet.deop.insufficient_permission": "Cannot make %s no longer a server operator due to insufficient permission",
+  "commands.banmallet.op.insufficient_permission": "Insufficient permission to promote users to server operator with permission level %s",
+  "commands.banmallet.opquery.not_op": "%s is not a server operator",
+  "commands.banmallet.opquery.op": "%s is a server operator with permission level %s",
+  "commands.op.success": "Made %s a server operator with permission level %s"
+}
