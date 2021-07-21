@@ -10,7 +10,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.socketmods.banmallet.CommandHelper;
-import dev.socketmods.banmallet.LambdaUtil;
 import dev.socketmods.banmallet.PermissionLevel;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
@@ -21,9 +20,7 @@ import net.minecraft.server.management.OpEntry;
 import net.minecraft.server.management.OpList;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -101,16 +98,13 @@ public class BHOpCommand {
         }
     }
 
-    private static final Method SEND_PLAYER_PERMISSION_LEVEL = ObfuscationReflectionHelper.findMethod(OpList.class,
-            "sendPlayerPermissionLevel", ServerPlayerEntity.class, int.class);
-
     private static void op(PlayerList playerList, GameProfile target, int permissionLevel) {
         final OpList opList = playerList.getOps();
 
         opList.add(new OpEntry(target, permissionLevel, opList.canBypassPlayerLimit(target)));
         ServerPlayerEntity player = playerList.getPlayer(target.getId());
         if (player != null) {
-            LambdaUtil.uncheck(() -> SEND_PLAYER_PERMISSION_LEVEL.invoke(player, permissionLevel));
+            playerList.sendPlayerPermissionLevel(player);
         }
     }
 }
