@@ -87,7 +87,7 @@ public class BHOpCommand {
                 op(playerList, target, permissionLevel);
                 ++successes;
                 source.sendSuccess(new TranslationTextComponent(
-                        "commands.op.success", target, permissionLevel), true);
+                        "commands.op.success", target.getName(), permissionLevel), true);
             }
         }
 

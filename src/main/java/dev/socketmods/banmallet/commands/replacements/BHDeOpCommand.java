@@ -61,7 +61,7 @@ public class BHDeOpCommand {
                             target.getName()), true);
                 } else {
                     source.sendFailure(new TranslationTextComponent(
-                            "commands.banmallet.deop.insufficient_permission"));
+                            "commands.banmallet.deop.insufficient_permission", target.getName()));
                 }
             }
         }
