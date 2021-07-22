@@ -38,6 +38,7 @@ minecraft {
         server {
             workingDirectory project.file('run/server') as File
 
+            arg '--nogui'
             property 'forge.logging.markers', logging_markers
             property 'forge.logging.console.level', logging_console
 
