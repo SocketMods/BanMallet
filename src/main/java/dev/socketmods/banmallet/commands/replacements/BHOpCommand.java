@@ -78,7 +78,7 @@ public class BHOpCommand {
         int successes = 0;
 
         final PermissionLevel thisPermissionLevel = PermissionLevel.forLevel(CommandHelper.getPermissionLevel(source));
-        if (thisPermissionLevel.canAffect(PermissionLevel.forLevel(permissionLevel))) {
+        if (!thisPermissionLevel.canAffect(PermissionLevel.forLevel(permissionLevel))) {
             throw ERROR_INSUFFICIENT_PERMISSION.create(permissionLevel);
         }
 
