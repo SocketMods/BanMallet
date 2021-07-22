@@ -64,10 +64,8 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSource> {
     }
 
     public boolean canAffect(PermissionLevel level) {
-        if (this == ADMIN) {
-            return true; // Admins can affect any level, even other admins
-        }
-        return this.asInt() > level.asInt();
+        // A level can affect the same level or lower
+        return this.asInt() >= level.asInt();
     }
 
     public static PermissionLevel forLevel(int permissionLevel) {
