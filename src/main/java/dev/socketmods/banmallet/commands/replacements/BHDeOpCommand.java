@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.socketmods.banmallet.CommandHelper;
+import dev.socketmods.banmallet.util.CommandHelper;
 import dev.socketmods.banmallet.PermissionLevel;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;

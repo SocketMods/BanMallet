@@ -1,4 +1,4 @@
-package dev.socketmods.banmallet;
+package dev.socketmods.banmallet.util;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,7 +26,7 @@ public final class CommandHelper {
     private CommandHelper() { // Prevent instantiation
     }
 
-    static void init() {
+    public static void init() {
     }
 
     public static int getPermissionLevel(CommandSource source) {

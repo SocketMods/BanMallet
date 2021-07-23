@@ -6,6 +6,7 @@ import dev.socketmods.banmallet.commands.arguments.DurationArgumentType;
 import dev.socketmods.banmallet.commands.replacements.BHBanCommand;
 import dev.socketmods.banmallet.commands.replacements.BHDeOpCommand;
 import dev.socketmods.banmallet.commands.replacements.BHOpCommand;
+import dev.socketmods.banmallet.util.CommandHelper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ArgumentSerializer;
@@ -23,7 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static dev.socketmods.banmallet.CommandHelper.replaceAndRegister;
+import static dev.socketmods.banmallet.util.CommandHelper.replaceAndRegister;
 
 @Mod(BanMallet.MODID)
 public class BanMallet {

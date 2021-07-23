@@ -1,4 +1,4 @@
-package dev.socketmods.banmallet;
+package dev.socketmods.banmallet.util;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
