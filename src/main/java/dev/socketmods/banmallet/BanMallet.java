@@ -2,10 +2,14 @@ package dev.socketmods.banmallet;
 
 import com.mojang.brigadier.CommandDispatcher;
 import dev.socketmods.banmallet.commands.OpQueryCommand;
+import dev.socketmods.banmallet.commands.arguments.DurationArgumentType;
+import dev.socketmods.banmallet.commands.replacements.BHBanCommand;
 import dev.socketmods.banmallet.commands.replacements.BHDeOpCommand;
 import dev.socketmods.banmallet.commands.replacements.BHOpCommand;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.ArgumentSerializer;
+import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +41,8 @@ public class BanMallet {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CONFIG_SPEC);
 
         CommandHelper.init();
+        ArgumentTypes.register(MODID + ":time_duration", DurationArgumentType.class,
+                new ArgumentSerializer<>(DurationArgumentType::duration));
 
         // LOW priority means that anyone who edits the commands before us is forcefully removed
         // Possibly consider HIGH instead?
@@ -62,6 +68,8 @@ public class BanMallet {
             replaceAndRegister(dispatcher, BHOpCommand.getNode());
             replaceAndRegister(dispatcher, BHDeOpCommand.getNode());
             OpQueryCommand.register(dispatcher);
+
+            replaceAndRegister(dispatcher, BHBanCommand.getNode());
         }
     }
 }

@@ -11,6 +11,10 @@ public class EnglishLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        this.add("parsing.banmallet.time_duration.expected", "Expected time unit");
+        this.add("parsing.banmallet.time_duration.invalid", "Invalid time unit '%s'");
+        this.add("parsing.banmallet.time_duration.higher", "Time unit is higher than previous time unit '%s'");
+
         this.add("commands.op.success", "Made %s a server operator with permission level %s");
         this.add("commands.banmallet.op.insufficient_permission",
                 "Insufficient permission to promote users to server operator with permission level %s");
@@ -20,5 +24,7 @@ public class EnglishLanguageProvider extends LanguageProvider {
 
         this.add("commands.banmallet.opquery.not_op", "%s is not a server operator");
         this.add("commands.banmallet.opquery.op", "%s is a server operator with permission level %s");
+
+        this.add("commands.banmallet.ban.success", "Banned %s for %s: %s");
     }
 }
