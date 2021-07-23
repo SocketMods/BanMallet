@@ -35,7 +35,8 @@ import static net.minecraft.util.text.TextComponentUtils.getDisplayName;
  * BanMallet's replacement for {@link net.minecraft.command.impl.BanCommand}.
  */
 public class BHBanCommand {
-    private static final SimpleCommandExceptionType ERROR_ALREADY_BANNED = new SimpleCommandExceptionType(new TranslationTextComponent("commands.ban.failed"));
+    private static final SimpleCommandExceptionType ERROR_ALREADY_BANNED = new SimpleCommandExceptionType(
+            new TranslationTextComponent("commands.ban.failed"));
 
     public static LiteralArgumentBuilder<CommandSource> getNode() {
         return literal("ban").requires(PermissionLevel.MODERATOR)
@@ -55,7 +56,8 @@ public class BHBanCommand {
                 );
     }
 
-    private static int banPlayers(CommandContext<CommandSource> ctx, Collection<GameProfile> targets, Duration duration, @Nullable ITextComponent reason) throws CommandSyntaxException {
+    private static int banPlayers(CommandContext<CommandSource> ctx, Collection<GameProfile> targets, Duration duration,
+                                  @Nullable ITextComponent reason) throws CommandSyntaxException {
         final CommandSource source = ctx.getSource();
         final BanList banList = source.getServer().getPlayerList().getBans();
         int successes = 0;
