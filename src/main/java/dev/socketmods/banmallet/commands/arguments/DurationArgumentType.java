@@ -20,15 +20,15 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 public class DurationArgumentType implements ArgumentType<Duration> {
-    public static final SimpleCommandExceptionType EXPECTED_UNIT = new SimpleCommandExceptionType(
+    private static final SimpleCommandExceptionType EXPECTED_UNIT = new SimpleCommandExceptionType(
             new TranslationTextComponent("parsing.banmallet.time_duration.expected"));
-    public static final DynamicCommandExceptionType INVALID_UNIT = new DynamicCommandExceptionType(
+    private static final DynamicCommandExceptionType INVALID_UNIT = new DynamicCommandExceptionType(
             s -> new TranslationTextComponent("parsing.banmallet.time_duration.invalid", s));
-    public static final DynamicCommandExceptionType HIGHER_UNIT_THAN_PREVIOUS = new DynamicCommandExceptionType(
+    private static final DynamicCommandExceptionType HIGHER_UNIT_THAN_PREVIOUS = new DynamicCommandExceptionType(
             s -> new TranslationTextComponent("parsing.banmallet.time_duration.higher", s));
 
-    static final Collection<String> SUGGESTED_UNITS = Arrays.asList("y", "M", "d", "h", "m", "s");
-    public static final Collection<String> EXAMPLES = Arrays.asList(
+    private static final Collection<String> SUGGESTED_UNITS = Arrays.asList("y", "M", "d", "h", "m", "s");
+    private static final Collection<String> EXAMPLES = Arrays.asList(
             "1s", "1m", "1h", "1d", "1M", "1y", "forever",
             "1m1s", "1h1m1s", "1d1h1m1s", "1M1d1h1m1s", "1y1M1d1h1m1s"
     );
