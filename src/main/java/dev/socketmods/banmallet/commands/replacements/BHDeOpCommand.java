@@ -4,21 +4,22 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.socketmods.banmallet.util.CommandHelper;
 import dev.socketmods.banmallet.PermissionLevel;
+import dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType;
+import dev.socketmods.banmallet.util.CommandHelper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.impl.DeOpCommand;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
+import static dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType.translatedExceptionType;
+import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
@@ -28,8 +29,7 @@ import static net.minecraft.command.arguments.GameProfileArgument.getGameProfile
  * BanMallet's replacement for {@link DeOpCommand}.
  */
 public class BHDeOpCommand {
-    private static final SimpleCommandExceptionType ERROR_NOT_OP = new SimpleCommandExceptionType(
-            new TranslationTextComponent("commands.deop.failed"));
+    private static final TranslatedCommandExceptionType ERROR_NOT_OP = translatedExceptionType("commands.deop.failed");
 
     public static LiteralArgumentBuilder<CommandSource> getNode() {
         return literal("deop")
@@ -57,17 +57,17 @@ public class BHDeOpCommand {
                 if (canDeop(server, source, target)) {
                     playerList.deop(target);
                     ++successes;
-                    source.sendSuccess(new TranslationTextComponent("commands.deop.success",
-                            target.getName()), true);
+                    source.sendSuccess(createTranslation(source, "commands.deop.success", target.getName()),
+                            true);
                 } else {
-                    source.sendFailure(new TranslationTextComponent(
-                            "commands.banmallet.deop.insufficient_permission", target.getName()));
+                    source.sendFailure(createTranslation(source, "commands.banmallet.deop.insufficient_permission",
+                            target.getName()));
                 }
             }
         }
 
         if (successes == 0) {
-            throw ERROR_NOT_OP.create();
+            throw ERROR_NOT_OP.create(source);
         } else {
             server.kickUnlistedPlayers(source);
             return successes;

@@ -9,11 +9,11 @@ import dev.socketmods.banmallet.PermissionLevel;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
+import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
@@ -42,10 +42,11 @@ public class OpQueryCommand {
             if (playerList.isOp(target)) {
                 ++successes;
                 final int permissionLevel = source.getServer().getProfilePermissions(target);
-                source.sendSuccess(new TranslationTextComponent("commands.banmallet.opquery.op",
+
+                source.sendSuccess(createTranslation(source, "commands.banmallet.opquery.op",
                         target.getName(), permissionLevel), false);
             } else {
-                source.sendSuccess(new TranslationTextComponent("commands.banmallet.opquery.not_op",
+                source.sendSuccess(createTranslation(source, "commands.banmallet.opquery.not_op",
                         target.getName()), false);
             }
         }

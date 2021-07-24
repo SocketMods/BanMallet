@@ -4,8 +4,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.socketmods.banmallet.PermissionLevel;
+import dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.management.BanList;
@@ -23,6 +23,8 @@ import java.util.Date;
 
 import static dev.socketmods.banmallet.commands.arguments.DurationArgumentType.duration;
 import static dev.socketmods.banmallet.commands.arguments.DurationArgumentType.getDuration;
+import static dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType.translatedExceptionType;
+import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
@@ -35,8 +37,7 @@ import static net.minecraft.util.text.TextComponentUtils.getDisplayName;
  * BanMallet's replacement for {@link net.minecraft.command.impl.BanCommand}.
  */
 public class BHBanCommand {
-    private static final SimpleCommandExceptionType ERROR_ALREADY_BANNED = new SimpleCommandExceptionType(
-            new TranslationTextComponent("commands.ban.failed"));
+    private static final TranslatedCommandExceptionType ERROR_ALREADY_BANNED = translatedExceptionType("commands.ban.failed");
 
     public static LiteralArgumentBuilder<CommandSource> getNode() {
         return literal("ban").requires(PermissionLevel.MODERATOR)
@@ -77,7 +78,7 @@ public class BHBanCommand {
                         reason == null ? null : reason.getString());
                 banList.add(entry);
                 ++successes;
-                source.sendSuccess(new TranslationTextComponent("commands.banmallet.ban.success",
+                source.sendSuccess(createTranslation(source, "commands.banmallet.ban.success",
                         getDisplayName(target), durationString, entry.getReason()), true);
                 ServerPlayerEntity player = source.getServer().getPlayerList().getPlayer(target.getId());
                 if (player != null) {
@@ -88,7 +89,7 @@ public class BHBanCommand {
         }
 
         if (successes == 0) {
-            throw ERROR_ALREADY_BANNED.create();
+            throw ERROR_ALREADY_BANNED.create(source);
         } else {
             return successes;
         }

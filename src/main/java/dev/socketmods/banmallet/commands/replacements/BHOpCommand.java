@@ -5,12 +5,11 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.socketmods.banmallet.util.CommandHelper;
 import dev.socketmods.banmallet.PermissionLevel;
+import dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType;
+import dev.socketmods.banmallet.util.CommandHelper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.impl.OpCommand;
@@ -19,13 +18,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.OpEntry;
 import net.minecraft.server.management.OpList;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType.translatedExceptionType;
+import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
@@ -35,10 +35,9 @@ import static net.minecraft.command.arguments.GameProfileArgument.getGameProfile
  * BanMallet's replacement for {@link OpCommand}.
  */
 public class BHOpCommand {
-    private static final SimpleCommandExceptionType ERROR_ALREADY_OP = new SimpleCommandExceptionType(
-            new TranslationTextComponent("commands.op.failed"));
-    private static final DynamicCommandExceptionType ERROR_INSUFFICIENT_PERMISSION = new DynamicCommandExceptionType(
-            s -> new TranslationTextComponent("commands.banmallet.op.insufficient_permission", s));
+    private static final TranslatedCommandExceptionType ERROR_ALREADY_OP = translatedExceptionType("commands.op.failed");
+    private static final TranslatedCommandExceptionType ERROR_INSUFFICIENT_PERMISSION =
+            translatedExceptionType("commands.banmallet.op.insufficient_permission");
 
     public static LiteralArgumentBuilder<CommandSource> getNode() {
         return literal("op")
@@ -79,20 +78,20 @@ public class BHOpCommand {
 
         final PermissionLevel thisPermissionLevel = PermissionLevel.forLevel(CommandHelper.getPermissionLevel(source));
         if (!thisPermissionLevel.canAffect(PermissionLevel.forLevel(permissionLevel))) {
-            throw ERROR_INSUFFICIENT_PERMISSION.create(permissionLevel);
+            throw ERROR_INSUFFICIENT_PERMISSION.create(source, permissionLevel);
         }
 
         for (GameProfile target : targets) {
             if (!playerList.isOp(target)) {
                 op(playerList, target, permissionLevel);
                 ++successes;
-                source.sendSuccess(new TranslationTextComponent(
-                        "commands.op.success", target.getName(), permissionLevel), true);
+                source.sendSuccess(createTranslation(source, "commands.op.success",
+                        target.getName(), permissionLevel), true);
             }
         }
 
         if (successes == 0) {
-            throw ERROR_ALREADY_OP.create();
+            throw ERROR_ALREADY_OP.create(source);
         } else {
             return successes;
         }
