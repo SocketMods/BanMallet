@@ -6,12 +6,12 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
+import static net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField;
 
 /**
  * Hacky reflection-based helper for manipulating {@link CommandNode}s.
@@ -21,7 +21,7 @@ public final class CommandHelper {
     private static final Field CHILDREN_FIELD = findField(CommandNode.class, "children");
     private static final Field LITERALS_FIELD = findField(CommandNode.class, "literals");
     private static final Field ARGUMENTS_FIELD = findField(CommandNode.class, "arguments");
-    private static final Field PERMISSION_LEVEL_FIELD = findField(CommandSource.class, "field_197044_f");
+    private static final Field PERMISSION_LEVEL_FIELD = findField(CommandSourceStack.class, "field_197044_f");
 
     private CommandHelper() { // Prevent instantiation
     }
@@ -29,7 +29,7 @@ public final class CommandHelper {
     public static void init() {
     }
 
-    public static int getPermissionLevel(CommandSource source) {
+    public static int getPermissionLevel(CommandSourceStack source) {
         return get(PERMISSION_LEVEL_FIELD, source);
     }
 

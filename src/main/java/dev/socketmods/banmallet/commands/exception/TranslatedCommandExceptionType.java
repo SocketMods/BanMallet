@@ -2,7 +2,7 @@ package dev.socketmods.banmallet.commands.exception;
 
 import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
 
@@ -17,7 +17,7 @@ public class TranslatedCommandExceptionType implements CommandExceptionType {
         this.translationKey = translationKey;
     }
 
-    public CommandSyntaxException create(CommandSource source, Object... args) {
+    public CommandSyntaxException create(CommandSourceStack source, Object... args) {
         return new CommandSyntaxException(this, createTranslation(source, translationKey, args));
     }
 }

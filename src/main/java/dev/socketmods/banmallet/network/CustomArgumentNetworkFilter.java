@@ -10,14 +10,14 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.socketmods.banmallet.commands.arguments.DurationArgumentType;
 import io.netty.channel.ChannelHandler;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.command.arguments.IArgumentSerializer;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SCommandListPacket;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentSerializer;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.network.NetworkFilters;
 import net.minecraftforge.network.VanillaConnectionNetworkFilter;
 import net.minecraftforge.network.VanillaPacketFilter;
@@ -34,10 +34,10 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
  * <p>In a normal Forge installation, the {@link VanillaConnectionNetworkFilter} is injected into the network pipeline
  * (by {@link NetworkFilters}), for the purpose of allowing compatibility between Forge servers and vanilla clients by
  * removing custom argument types (those not under the {@code minecraft} or {@code brigadier} namespaces) from the
- * {@linkplain SCommandListPacket command tree sync packet}. </p>
+ * {@linkplain ClientboundCommandsPacket command tree sync packet}. </p>
  *
  * <p>The reason for this is because of custom registered argument types. {@link ArgumentType}s are registered at the
- * {@link ArgumentTypes} with a {@linkplain ResourceLocation resource location} and an {@linkplain IArgumentSerializer},
+ * {@link ArgumentTypes} with a {@linkplain ResourceLocation resource location} and an {@linkplain ArgumentSerializer},
  * to allow argument types to be synchronized over the network from server to client. However, if the client receives an
  * unrecognized argument type name (such as a custom argument type registered on the Forge server), it will fail to
  * deserialize the packet and disconnect. </p>
@@ -55,22 +55,22 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 @ChannelHandler.Sharable
 public class CustomArgumentNetworkFilter extends VanillaPacketFilter {
     public CustomArgumentNetworkFilter() {
-        super(ImmutableMap.<Class<? extends IPacket<?>>, BiConsumer<IPacket<?>, List<? super IPacket<?>>>>builder()
-                .put(handler(SCommandListPacket.class, CustomArgumentNetworkFilter::filterCustomArguments))
+        super(ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
+                .put(handler(ClientboundCommandsPacket.class, CustomArgumentNetworkFilter::filterCustomArguments))
                 .build());
     }
 
     @Override
-    protected boolean isNecessary(NetworkManager manager) {
+    protected boolean isNecessary(Connection manager) {
         return NetworkHooks.isVanillaConnection(manager);
     }
 
-    private static SCommandListPacket filterCustomArguments(SCommandListPacket packet) {
-        final RootCommandNode<ISuggestionProvider> rootNode = packet.getRoot();
-        final RootCommandNode<ISuggestionProvider> modifiedRoot = CommandTreeProcessor.processCommandTree(rootNode,
+    private static ClientboundCommandsPacket filterCustomArguments(ClientboundCommandsPacket packet) {
+        final RootCommandNode<SharedSuggestionProvider> rootNode = packet.getRoot();
+        final RootCommandNode<SharedSuggestionProvider> modifiedRoot = CommandTreeProcessor.processCommandTree(rootNode,
                 CustomArgumentNetworkFilter::filterNode, CustomArgumentNetworkFilter::modifyBuilder);
 
-        return new SCommandListPacket(modifiedRoot);
+        return new ClientboundCommandsPacket(modifiedRoot);
     }
 
     private static <S> boolean filterNode(CommandNode<S> node) {

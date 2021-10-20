@@ -6,12 +6,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.socketmods.banmallet.PermissionLevel;
 import dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.server.management.BanList;
-import net.minecraft.server.management.ProfileBanEntry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.UserBanList;
+import net.minecraft.server.players.UserBanListEntry;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import javax.annotation.Nullable;
@@ -25,21 +25,21 @@ import static dev.socketmods.banmallet.commands.arguments.DurationArgumentType.d
 import static dev.socketmods.banmallet.commands.arguments.DurationArgumentType.getDuration;
 import static dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType.translatedExceptionType;
 import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
-import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
-import static net.minecraft.command.arguments.GameProfileArgument.getGameProfiles;
-import static net.minecraft.command.arguments.MessageArgument.getMessage;
-import static net.minecraft.command.arguments.MessageArgument.message;
-import static net.minecraft.util.text.TextComponentUtils.getDisplayName;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.GameProfileArgument.gameProfile;
+import static net.minecraft.commands.arguments.GameProfileArgument.getGameProfiles;
+import static net.minecraft.commands.arguments.MessageArgument.getMessage;
+import static net.minecraft.commands.arguments.MessageArgument.message;
+import static net.minecraft.network.chat.ComponentUtils.getDisplayName;
 
 /**
- * BanMallet's replacement for {@link net.minecraft.command.impl.BanCommand}.
+ * BanManet.minecraft.network.chat.ComponentUtilst.command.impl.BanCommand}.
  */
 public class BHBanCommand {
     private static final TranslatedCommandExceptionType ERROR_ALREADY_BANNED = translatedExceptionType("commands.ban.failed");
 
-    public static LiteralArgumentBuilder<CommandSource> getNode() {
+    public static LiteralArgumentBuilder<CommandSourceStack> getNode() {
         return literal("ban").requires(PermissionLevel.MODERATOR)
                 .then(argument("targets", gameProfile())
                         .then(argument("duration", duration())
@@ -57,10 +57,10 @@ public class BHBanCommand {
                 );
     }
 
-    private static int banPlayers(CommandContext<CommandSource> ctx, Collection<GameProfile> targets, Duration duration,
-                                  @Nullable ITextComponent reason) throws CommandSyntaxException {
-        final CommandSource source = ctx.getSource();
-        final BanList banList = source.getServer().getPlayerList().getBans();
+    private static int banPlayers(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> targets, Duration duration,
+                                  @Nullable Component reason) throws CommandSyntaxException {
+        final CommandSourceStack source = ctx.getSource();
+        final UserBanList banList = source.getServer().getPlayerList().getBans();
         int successes = 0;
 
         final Date expiry;
@@ -74,16 +74,16 @@ public class BHBanCommand {
         }
         for (GameProfile target : targets) {
             if (!banList.isBanned(target)) {
-                ProfileBanEntry entry = new ProfileBanEntry(target, null, source.getTextName(), expiry,
+                UserBanListEntry entry = new UserBanListEntry(target, null, source.getTextName(), expiry,
                         reason == null ? null : reason.getString());
                 banList.add(entry);
                 ++successes;
                 source.sendSuccess(createTranslation(source, "commands.banmallet.ban.success",
                         getDisplayName(target), durationString, entry.getReason()), true);
-                ServerPlayerEntity player = source.getServer().getPlayerList().getPlayer(target.getId());
+                ServerPlayer player = source.getServer().getPlayerList().getPlayer(target.getId());
                 if (player != null) {
                     player.connection.disconnect(
-                            new TranslationTextComponent("multiplayer.disconnect.banned"));
+                            new TranslatableComponent("multiplayer.disconnect.banned"));
                 }
             }
         }

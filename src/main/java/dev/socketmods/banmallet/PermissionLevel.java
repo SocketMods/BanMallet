@@ -1,9 +1,9 @@
 package dev.socketmods.banmallet;
 
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.impl.*;
-import net.minecraft.server.dedicated.ServerProperties;
-import net.minecraft.tileentity.CommandBlockLogic;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.commands.*;
+import net.minecraft.server.dedicated.DedicatedServerProperties;
+import net.minecraft.world.level.BaseCommandBlock;
 
 import java.util.NoSuchElementException;
 import java.util.function.IntSupplier;
@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * <p>
  * A higher permission level implies all the permissions of the lower levels.
  */
-public enum PermissionLevel implements IntSupplier, Predicate<CommandSource> {
+public enum PermissionLevel implements IntSupplier, Predicate<CommandSourceStack> {
     /**
      * Default permission level which implies no permissions. All players are part of this permission level by default.
      */
@@ -28,12 +28,12 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSource> {
      * Permission level for server gamemasters, with access to world-altering commands such as {@link TimeCommand
      * /time}, {@link GameModeCommand /gamemode}, {@link ExecuteCommand /execute}, and others.
      * <p>
-     * {@linkplain CommandBlockLogic Command blocks} and {@linkplain ServerProperties#functionPermissionLevel functions}
-     * have this permission level by default.
+     * {@linkplain BaseCommandBlock Command blocks} and {@linkplain DedicatedServerProperties#functionPermissionLevel
+     * functions} have this permission level by default.
      */
     GAMEMASTER(2),
     /**
-     * Permission level for server moderators, with access to multiplayer management commands such as {@link BanCommand
+     * Permission level for server moderators, with access to multiplayer management commands such as {@link BanPlayerCommands
      * /ban}, {@link OpCommand /op}, and others.
      */
     MODERATOR(3),
@@ -59,7 +59,7 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSource> {
     }
 
     @Override
-    public boolean test(CommandSource source) {
+    public boolean test(CommandSourceStack source) {
         return source.hasPermission(permissionLevel);
     }
 

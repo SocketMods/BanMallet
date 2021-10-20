@@ -9,29 +9,29 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.socketmods.banmallet.PermissionLevel;
 import dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType;
 import dev.socketmods.banmallet.util.CommandHelper;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.command.impl.DeOpCommand;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerList;
+import net.minecraft.server.commands.DeOpCommands;
+import net.minecraft.server.players.PlayerList;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import static dev.socketmods.banmallet.commands.exception.TranslatedCommandExceptionType.translatedExceptionType;
 import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
-import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
-import static net.minecraft.command.arguments.GameProfileArgument.getGameProfiles;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.GameProfileArgument.gameProfile;
+import static net.minecraft.commands.arguments.GameProfileArgument.getGameProfiles;
 
 /**
- * BanMallet's replacement for {@link DeOpCommand}.
+ * BanMallet's replacement for {@link DeOpCommands}.
  */
 public class BHDeOpCommand {
     private static final TranslatedCommandExceptionType ERROR_NOT_OP = translatedExceptionType("commands.deop.failed");
 
-    public static LiteralArgumentBuilder<CommandSource> getNode() {
+    public static LiteralArgumentBuilder<CommandSourceStack> getNode() {
         return literal("deop")
                 .requires(PermissionLevel.MODERATOR)
                 .then(argument("targets", gameProfile())
@@ -40,14 +40,14 @@ public class BHDeOpCommand {
                 );
     }
 
-    static CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSource> ctx,
+    static CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> ctx,
                                                          final SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggest(ctx.getSource().getServer().getPlayerList().getOpNames(), builder);
+        return SharedSuggestionProvider.suggest(ctx.getSource().getServer().getPlayerList().getOpNames(), builder);
     }
 
-    private static int deopPlayers(CommandContext<CommandSource> ctx, Collection<GameProfile> targets)
+    private static int deopPlayers(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> targets)
             throws CommandSyntaxException {
-        final CommandSource source = ctx.getSource();
+        final CommandSourceStack source = ctx.getSource();
         final MinecraftServer server = source.getServer();
         final PlayerList playerList = server.getPlayerList();
         int successes = 0;
@@ -74,7 +74,7 @@ public class BHDeOpCommand {
         }
     }
 
-    private static boolean canDeop(MinecraftServer server, CommandSource source, GameProfile target) {
+    private static boolean canDeop(MinecraftServer server, CommandSourceStack source, GameProfile target) {
         final PermissionLevel targetLevel = PermissionLevel.forLevel(server.getProfilePermissions(target));
         final PermissionLevel sourceLevel = PermissionLevel.forLevel(CommandHelper.getPermissionLevel(source));
 

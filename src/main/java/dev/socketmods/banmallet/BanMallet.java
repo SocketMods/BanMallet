@@ -7,10 +7,10 @@ import dev.socketmods.banmallet.commands.replacements.BHBanCommand;
 import dev.socketmods.banmallet.commands.replacements.BHDeOpCommand;
 import dev.socketmods.banmallet.commands.replacements.BHOpCommand;
 import dev.socketmods.banmallet.util.CommandHelper;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.ArgumentSerializer;
-import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +19,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +43,7 @@ public class BanMallet {
 
         CommandHelper.init();
         ArgumentTypes.register(MODID + ":time_duration", DurationArgumentType.class,
-                new ArgumentSerializer<>(DurationArgumentType::duration));
+                new EmptyArgumentSerializer<>(DurationArgumentType::duration));
 
         // LOW priority means that anyone who edits the commands before us is forcefully removed
         // Possibly consider HIGH instead?
@@ -62,10 +62,10 @@ public class BanMallet {
             return;
         }
 
-        final CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
+        final CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         // includeDedicated == true
-        if (event.getEnvironment() != Commands.EnvironmentType.INTEGRATED) {
+        if (event.getEnvironment() != Commands.CommandSelection.INTEGRATED) {
             replaceAndRegister(dispatcher, BHOpCommand.getNode());
             replaceAndRegister(dispatcher, BHDeOpCommand.getNode());
             OpQueryCommand.register(dispatcher);

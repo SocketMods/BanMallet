@@ -2,15 +2,15 @@ package dev.socketmods.banmallet.network;
 
 import dev.socketmods.banmallet.BanMallet;
 import io.netty.channel.ChannelHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.ServerPlayNetHandler;
+import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,11 +23,11 @@ public class NetworkFilterHook {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        final PlayerEntity player = event.getPlayer();
-        if (player instanceof ServerPlayerEntity) {
-            final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-            final ServerPlayNetHandler netHandler = serverPlayer.connection;
-            final NetworkManager manager = netHandler.connection;
+        final Player player = event.getPlayer();
+        if (player instanceof ServerPlayer) {
+            final ServerPlayer serverPlayer = (ServerPlayer) player;
+            final ServerGamePacketListenerImpl netHandler = serverPlayer.connection;
+            final Connection manager = netHandler.connection;
 
             if (NetworkHooks.isVanillaConnection(manager)) {
                 LOGGER.debug("Injecting custom network hooks into vanilla connection for {}", serverPlayer);
@@ -44,7 +44,7 @@ public class NetworkFilterHook {
         }
     }
 
-    public static void injectFilter(NetworkManager manager, String existingHandlerName, String name, ChannelHandler handler) {
+    public static void injectFilter(Connection manager, String existingHandlerName, String name, ChannelHandler handler) {
         // Yes, we have to use addAfter so our new filter runs _before_ the existing one
         manager.channel().pipeline().addAfter(existingHandlerName, name, handler);
         LOGGER.debug("Injected handler {} after {} into {}", name, manager, existingHandlerName);

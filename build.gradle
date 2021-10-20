@@ -3,6 +3,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.0.36'
 }
 apply from: 'gradle/version.gradle'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 version = versions.getVersion()
 println "Mod version: $version"
@@ -77,7 +78,7 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    toolchain.languageVersion = JavaLanguageVersion.of(16)
     withSourcesJar()
 }
 

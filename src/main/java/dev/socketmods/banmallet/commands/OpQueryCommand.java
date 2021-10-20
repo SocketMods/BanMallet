@@ -6,21 +6,21 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.socketmods.banmallet.PermissionLevel;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.server.management.PlayerList;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.server.players.PlayerList;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import static dev.socketmods.banmallet.util.TranslationUtil.createTranslation;
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
-import static net.minecraft.command.arguments.GameProfileArgument.gameProfile;
-import static net.minecraft.command.arguments.GameProfileArgument.getGameProfiles;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.GameProfileArgument.gameProfile;
+import static net.minecraft.commands.arguments.GameProfileArgument.getGameProfiles;
 
 public class OpQueryCommand {
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(literal("opquery")
                 .requires(PermissionLevel.MODERATOR)
                 .then(argument("targets", gameProfile())
@@ -28,13 +28,13 @@ public class OpQueryCommand {
                         .executes((ctx) -> queryOp(ctx, getGameProfiles(ctx, "targets")))));
     }
 
-    static CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSource> ctx,
+    static CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> ctx,
                                                          final SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggest(ctx.getSource().getServer().getPlayerList().getOpNames(), builder);
+        return SharedSuggestionProvider.suggest(ctx.getSource().getServer().getPlayerList().getOpNames(), builder);
     }
 
-    static int queryOp(CommandContext<CommandSource> ctx, Collection<GameProfile> targets) {
-        final CommandSource source = ctx.getSource();
+    static int queryOp(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> targets) {
+        final CommandSourceStack source = ctx.getSource();
         final PlayerList playerList = source.getServer().getPlayerList();
         int successes = 0;
 

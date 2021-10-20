@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -21,11 +21,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class DurationArgumentType implements ArgumentType<Duration> {
     private static final SimpleCommandExceptionType EXPECTED_UNIT = new SimpleCommandExceptionType(
-            new TranslationTextComponent("parsing.banmallet.time_duration.expected"));
+            new TranslatableComponent("parsing.banmallet.time_duration.expected"));
     private static final DynamicCommandExceptionType INVALID_UNIT = new DynamicCommandExceptionType(
-            s -> new TranslationTextComponent("parsing.banmallet.time_duration.invalid", s));
+            s -> new TranslatableComponent("parsing.banmallet.time_duration.invalid", s));
     private static final DynamicCommandExceptionType HIGHER_UNIT_THAN_PREVIOUS = new DynamicCommandExceptionType(
-            s -> new TranslationTextComponent("parsing.banmallet.time_duration.higher", s));
+            s -> new TranslatableComponent("parsing.banmallet.time_duration.higher", s));
 
     private static final Collection<String> SUGGESTED_UNITS = Arrays.asList("y", "M", "d", "h", "m", "s");
     private static final Collection<String> EXAMPLES = Arrays.asList(
@@ -96,11 +96,11 @@ public class DurationArgumentType implements ArgumentType<Duration> {
         final String beforeRemaining = builder.getInput().substring(0, builder.getStart());
         if (Character.isDigit(beforeRemaining.charAt(beforeRemaining.length() - 1))) {
             // This is a number, so suggest a unit
-            return ISuggestionProvider.suggest(SUGGESTED_UNITS, builder);
+            return SharedSuggestionProvider.suggest(SUGGESTED_UNITS, builder);
         }
         if (Character.isWhitespace(beforeRemaining.charAt(beforeRemaining.length() - 1))) {
             // Nothing yet, so suggest 'forever'
-            return ISuggestionProvider.suggest(Collections.singleton("forever"), builder);
+            return SharedSuggestionProvider.suggest(Collections.singleton("forever"), builder);
         }
         return Suggestions.empty();
     }
