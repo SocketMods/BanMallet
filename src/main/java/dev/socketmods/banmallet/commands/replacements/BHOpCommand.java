@@ -44,7 +44,8 @@ public class BHOpCommand {
                 .requires(PermissionLevel.MODERATOR)
                 .then(argument("targets", gameProfile())
                         .suggests(BHOpCommand::getSuggestions)
-                        .then(argument("level", IntegerArgumentType.integer(1, 4))
+                        .then(argument("level",
+                                IntegerArgumentType.integer(PermissionLevel.BUILDER.asInt(), PermissionLevel.ADMIN.asInt()))
                                 .executes((ctx) -> opPlayers(ctx, getGameProfiles(ctx, "targets"),
                                         getInteger(ctx, "level")))
                         )
