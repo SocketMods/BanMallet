@@ -21,7 +21,7 @@ public final class CommandHelper {
     private static final Field CHILDREN_FIELD = findField(CommandNode.class, "children");
     private static final Field LITERALS_FIELD = findField(CommandNode.class, "literals");
     private static final Field ARGUMENTS_FIELD = findField(CommandNode.class, "arguments");
-    private static final Field PERMISSION_LEVEL_FIELD = findField(CommandSourceStack.class, "field_197044_f");
+    private static final Field PERMISSION_LEVEL_FIELD = findField(CommandSourceStack.class, "f_81291");
 
     private CommandHelper() { // Prevent instantiation
     }
