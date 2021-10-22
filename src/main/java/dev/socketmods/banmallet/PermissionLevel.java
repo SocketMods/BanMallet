@@ -1,6 +1,7 @@
 package dev.socketmods.banmallet;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.commands.*;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.world.level.BaseCommandBlock;
@@ -18,12 +19,12 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSourceStack
     /**
      * Default permission level which implies no permissions. All players are part of this permission level by default.
      */
-    NONE(0),
+    NONE(Commands.LEVEL_ALL),
     /**
      * Permission level for server builders, which permits them to bypass the spawn protection, allowing them to build
      * with the world spawn area.
      */
-    BUILDER(1),
+    BUILDER(Commands.LEVEL_MODERATORS),
     /**
      * Permission level for server gamemasters, with access to world-altering commands such as {@link TimeCommand
      * /time}, {@link GameModeCommand /gamemode}, {@link ExecuteCommand /execute}, and others.
@@ -31,17 +32,17 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSourceStack
      * {@linkplain BaseCommandBlock Command blocks} and {@linkplain DedicatedServerProperties#functionPermissionLevel
      * functions} have this permission level by default.
      */
-    GAMEMASTER(2),
+    GAMEMASTER(Commands.LEVEL_GAMEMASTERS),
     /**
      * Permission level for server moderators, with access to multiplayer management commands such as {@link BanPlayerCommands
      * /ban}, {@link OpCommand /op}, and others.
      */
-    MODERATOR(3),
+    MODERATOR(Commands.LEVEL_MODERATORS),
     /**
      * Permission level for server administrators, with access to server management commands such as {@link StopCommand
      * /stop}, {@link SaveAllCommand /save-all}, and others.
      */
-    ADMIN(4);
+    ADMIN(Commands.LEVEL_ADMINS);
 
     private final int permissionLevel;
 
