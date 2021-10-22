@@ -1,9 +1,8 @@
 plugins {
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.0.36'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
 apply from: 'gradle/version.gradle'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 version = versions.getVersion()
 println "Mod version: $version"
@@ -24,8 +23,8 @@ minecraft {
     mappings channel: mappings_channel, version: mappings_version
 
     runs {
-        client {
-            workingDirectory project.file('run/client') as File
+        configureEach {
+            workingDirectory project.file('run/' + it.name) as File
 
             property 'forge.logging.markers', logging_markers
             property 'forge.logging.console.level', logging_console
@@ -34,33 +33,21 @@ minecraft {
             mods.register(modid as String) {
                 source sourceSets.main as SourceSet
             }
+        }
+
+        client {
         }
 
         server {
-            workingDirectory project.file('run/server') as File
-
-            arg '--nogui'
-            property 'forge.logging.markers', logging_markers
-            property 'forge.logging.console.level', logging_console
-
-            ideaModule "${project.name}.main"
-            mods.register(modid as String) {
-                source sourceSets.main as SourceSet
-            }
         }
 
         data {
-            workingDirectory project.file('run/data') as File
-
-            property 'forge.logging.markers', logging_markers
-            property 'forge.logging.console.level', logging_console
-
             args '--mod', modid, '--all'
             args '--output', sourceSets.data.resources.srcDirs[0].toString()
             args '--existing', sourceSets.main.resources.srcDirs[0].toString()
 
             ideaModule "${project.name}.data"
-            mods.register(modid as String) {
+            mods.named(modid as String) {
                 sources sourceSets.main as SourceSet, sourceSets.data as SourceSet
             }
         }
@@ -78,6 +65,7 @@ dependencies {
 }
 
 java {
+    archivesBaseName = "${project.name}-${mc_version}"
     toolchain.languageVersion = JavaLanguageVersion.of(16)
     withSourcesJar()
 }
@@ -93,23 +81,15 @@ var manifestAttributes = [
         "Git-Commit-Timestamp"  : versions.getCommitTimestamp()
 ] as LinkedHashMap
 
-tasks.named('jar', Jar).configure {
-    finalizedBy 'reobfJar'
-    archivesBaseName = "${project.name}-${mc_version}"
-
+tasks.withType(Jar).configureEach {
     manifest.attributes(manifestAttributes)
     includeEmptyDirs false
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 }
 
-tasks.named('sourcesJar', Jar).configure {
-    archivesBaseName = "${project.name}-${mc_version}"
-
-    manifest.attributes(manifestAttributes)
-    includeEmptyDirs false
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+tasks.named('jar', Jar).configure {
+    finalizedBy 'reobfJar'
 }
 
 // noinspection UnnecessaryQualifiedReference
@@ -124,6 +104,7 @@ publishing {
         it.artifactId = project.name
         it.version = "$mc_version-${versions.getRawVersion()}${versions.isSnapshot() ? '-SNAPSHOT' : ''}"
     }
+
     repositories {
         maven {
             name 'projectLocal'
