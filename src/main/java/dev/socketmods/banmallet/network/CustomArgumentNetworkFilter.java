@@ -74,8 +74,8 @@ public class CustomArgumentNetworkFilter extends VanillaPacketFilter {
     }
 
     private static <S> boolean filterNode(CommandNode<S> node) {
-        return node instanceof ArgumentCommandNode<?, ?>
-                && ((ArgumentCommandNode<?, ?>) node).getType() instanceof DurationArgumentType;
+        return node instanceof ArgumentCommandNode<?, ?> argumentNode
+                && argumentNode.getType() instanceof DurationArgumentType;
     }
 
     @SuppressWarnings("unchecked")

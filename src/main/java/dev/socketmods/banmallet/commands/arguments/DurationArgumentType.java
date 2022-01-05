@@ -107,28 +107,16 @@ public class DurationArgumentType implements ArgumentType<Duration> {
 
     @Nullable
     private static Duration parseDurationUnit(final char unit) {
-        switch (unit) {
-            case 'Y':
-            case 'y':
-                return Duration.ofDays(365); // Years
-            case 'M':
-                return Duration.ofDays(30); // Months
-            case 'W':
-            case 'w':
-                return Duration.ofDays(7); // Weeks
-            case 'D':
-            case 'd':
-                return Duration.ofDays(1); // Days
-            case 'H':
-            case 'h':
-                return Duration.ofHours(1); // Hours
-            case 'm':
-                return Duration.ofMinutes(1); // Minutes
-            case 'S':
-            case 's':
-                return Duration.ofSeconds(1); // Seconds
-        }
-        return null;
+        return switch (unit) {
+            case 'Y', 'y' -> Duration.ofDays(365); // Years
+            case 'M' -> Duration.ofDays(30); // Months
+            case 'W', 'w' -> Duration.ofDays(7); // Weeks
+            case 'D', 'd' -> Duration.ofDays(1); // Days
+            case 'H', 'h' -> Duration.ofHours(1); // Hours
+            case 'm' -> Duration.ofMinutes(1); // Minutes
+            case 'S', 's' -> Duration.ofSeconds(1); // Seconds
+            default -> null;
+        };
     }
 
     @Override

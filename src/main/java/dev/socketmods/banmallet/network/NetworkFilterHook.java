@@ -6,7 +6,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,22 +22,20 @@ public class NetworkFilterHook {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        final Player player = event.getPlayer();
-        if (player instanceof ServerPlayer) {
-            final ServerPlayer serverPlayer = (ServerPlayer) player;
-            final ServerGamePacketListenerImpl netHandler = serverPlayer.connection;
+        if (event.getPlayer() instanceof ServerPlayer player) {
+            final ServerGamePacketListenerImpl netHandler = player.connection;
             final Connection manager = netHandler.connection;
 
             if (NetworkHooks.isVanillaConnection(manager)) {
-                LOGGER.debug("Injecting custom network hooks into vanilla connection for {}", serverPlayer);
+                LOGGER.debug("Injecting custom network hooks into vanilla connection for {}", player);
                 // Insert the custom arguments filter to work before Forge's vanilla connection filter
                 injectFilter(manager, "forge:vanilla_filter", BanMallet.MODID + ":custom_arguments",
                         new CustomArgumentNetworkFilter());
 
-                final MinecraftServer server = serverPlayer.getServer();
+                final MinecraftServer server = player.getServer();
                 if (server != null) {
                     // Re-send command tree, with our filter now in place
-                    server.getCommands().sendCommands(serverPlayer);
+                    server.getCommands().sendCommands(player);
                 }
             }
         }

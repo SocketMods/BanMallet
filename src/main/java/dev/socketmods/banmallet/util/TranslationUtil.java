@@ -59,10 +59,10 @@ public final class TranslationUtil {
 
         for (int i = 0; i < oldArgs.length; i++) {
             Object obj = oldArgs[i];
-            if (obj instanceof TranslatableComponent) {
-                newArgs[i] = eagerTranslate((TranslatableComponent) obj);
-            } else if (obj instanceof MutableComponent) {
-                newArgs[i] = eagerCheckStyle((MutableComponent) obj);
+            if (obj instanceof TranslatableComponent translatable) {
+                newArgs[i] = eagerTranslate(translatable);
+            } else if (obj instanceof MutableComponent mutable) {
+                newArgs[i] = eagerCheckStyle(mutable);
             } else {
                 newArgs[i] = oldArgs[i];
             }
@@ -73,10 +73,10 @@ public final class TranslationUtil {
         result.setStyle(component.getStyle());
 
         for (Component sibling : component.getSiblings()) {
-            if (sibling instanceof TranslatableComponent) {
-                result.append(eagerTranslate((TranslatableComponent) sibling));
-            } else if (sibling instanceof MutableComponent) {
-                result.append(eagerCheckStyle((MutableComponent) sibling));
+            if (sibling instanceof TranslatableComponent translatableSibling) {
+                result.append(eagerTranslate(translatableSibling));
+            } else if (sibling instanceof MutableComponent mutableSibling) {
+                result.append(eagerCheckStyle(mutableSibling));
             } else {
                 result.append(sibling);
             }
