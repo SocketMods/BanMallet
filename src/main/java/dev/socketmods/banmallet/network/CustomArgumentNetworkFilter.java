@@ -17,10 +17,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
-import net.minecraftforge.network.NetworkFilters;
-import net.minecraftforge.network.VanillaConnectionNetworkFilter;
-import net.minecraftforge.network.VanillaPacketFilter;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.filters.NetworkFilters;
+import net.minecraftforge.network.filters.VanillaConnectionNetworkFilter;
+import net.minecraftforge.network.filters.VanillaPacketFilter;
 
 import java.util.List;
 import java.util.function.BiConsumer;
