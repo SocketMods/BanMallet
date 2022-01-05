@@ -37,12 +37,12 @@ public enum PermissionLevel implements IntSupplier, Predicate<CommandSourceStack
      * Permission level for server moderators, with access to multiplayer management commands such as {@link BanPlayerCommands
      * /ban}, {@link OpCommand /op}, and others.
      */
-    MODERATOR(Commands.LEVEL_MODERATORS),
+    MODERATOR(Commands.LEVEL_ADMINS),
     /**
      * Permission level for server administrators, with access to server management commands such as {@link StopCommand
      * /stop}, {@link SaveAllCommand /save-all}, and others.
      */
-    ADMIN(Commands.LEVEL_ADMINS);
+    ADMIN(Commands.LEVEL_OWNERS);
 
     private final int permissionLevel;
 
